@@ -22,7 +22,8 @@
     "watch": "webpack --mode development --watch",
     "build-laws": "node scripts/build-laws.mts",
     "verify-laws": "node scripts/verify-laws.mts",
-    "check-scripts": "tsc -p scripts"
+    "check-scripts": "tsc -p scripts",
+    "test": "vitest run"
   },
   "dependencies": {
     "core-js": "^3.36.0",
@@ -53,6 +54,7 @@
     "process": "^0.11.10",
     "source-map-loader": "^5.0.0",
     "typescript": "^5.4.2",
+    "vitest": "^5.0.5",
     "webpack": "^5.105.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^6.0.0"
@@ -60,7 +62,9 @@
   "prettier": "office-addin-prettier-config",
   "browserslist": [
     "last 2 versions",
-    "ie 11"
+    "safari >= 15",
+    "not dead",
+    "not ie 11"
   ],
   "description": "Word-Add-in, das zitierte Normen aus BGB und HGB im Seitenbereich anzeigt"
 }
