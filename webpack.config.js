@@ -63,6 +63,11 @@ module.exports = async (env, options) => {
             to: "assets/[name][ext][query]",
           },
           {
+            // Gesetzestexte; der Seitenbereich lädt sie bei Bedarf (siehe src/lawStore.ts).
+            from: "src/data/*.json",
+            to: "data/[name][ext]",
+          },
+          {
             from: "manifest*.xml",
             to: "[name]" + "[ext]",
             transform(content) {

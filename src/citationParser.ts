@@ -14,13 +14,17 @@
 export interface Pinpoint {
   absatz?: string;
   unterabsatz?: string;
-  /** Satz des Absatzes, bei "Nr. 2 S. 1" der Satz innerhalb der Nummer. */
   satz?: string;
   halbsatz?: string;
   nr?: string;
   buchstabe?: string;
   /** Alternative, Variante oder Fall. */
   alt?: string;
+  /**
+   * Satz und Halbsatz stehen innerhalb der Nummer bzw. des Buchstabens ("§ 569 Abs. 3 Nr. 2 S. 1"),
+   * nicht darüber ("§ 434 Abs. 1 S. 2 Nr. 1").
+   */
+  withinNr?: true;
 }
 
 export interface Citation {
@@ -511,9 +515,10 @@ function parsePinpoints(s: Scanner, citation: Citation, rule: ListRule): void {
       current = shallower(current);
       citation.pinpoints.push(current);
     }
+    if (insideNumber) current.withinNr = true;
     current[level] = values[0];
     for (const value of values.slice(1)) {
-      current = { ...shallower(current), [level]: value };
+      current = { ...(insideNumber ? current : shallower(current)), [level]: value };
       citation.pinpoints.push(current);
     }
   };

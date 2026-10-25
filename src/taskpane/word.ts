@@ -1,30 +1,45 @@
 /*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
- * See LICENSE in the project root for license information.
+ * Anbindung an Word: liest den Absatz unter dem Cursor und meldet Cursorbewegungen.
  */
 
-/* global document, Office, Word */
+/* global Office, Word */
 
-Office.onReady((info) => {
-  if (info.host === Office.HostType.Word) {
-    document.getElementById("sideload-msg")!.style.display = "none";
-    document.getElementById("app-body")!.style.display = "flex";
-    document.getElementById("run")!.onclick = runWord;
-  }
-});
+import type { CursorText } from "./panel";
 
-export async function runWord() {
-  return Word.run(async (context: Word.RequestContext) => {
-    /**
-     * Insert your Word code here
-     */
-
-    // insert a paragraph at the end of the document.
-    const paragraph = context.document.body.insertParagraph("Hello World", Word.InsertLocation.end);
-
-    // change the paragraph color to blue.
-    paragraph.font.color = "blue";
-
+/** Absatztext und Cursorposition darin; bei einer Markierung zählt ihr Anfang. Wirft, wenn Word nicht liefert. */
+export async function readCursor(): Promise<CursorText> {
+  return Word.run(async (context) => {
+    const selection = context.document.getSelection();
+    const paragraph = selection.paragraphs.getFirst();
+    // Text vom Absatzanfang bis zum Cursor; seine Länge ist die Cursorposition im Absatz.
+    const before = paragraph
+      .getRange(Word.RangeLocation.start)
+      .expandTo(selection.getRange(Word.RangeLocation.start));
+    paragraph.load("text");
+    before.load("text");
     await context.sync();
+    return { text: paragraph.text, offset: before.text.length };
   });
+}
+
+/**
+ * Ruft `listener` nach jeder Cursorbewegung auf, gebündelt mit kurzer Pause.
+ * `onError` erfährt, wenn Word das Ereignis nicht liefern kann (z. B. fehlende Berechtigung).
+ */
+export function onCursorMoved(
+  listener: () => void,
+  onError: (message: string) => void,
+  delayMs = 150
+): void {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  Office.context.document.addHandlerAsync(
+    Office.EventType.DocumentSelectionChanged,
+    () => {
+      clearTimeout(timer);
+      timer = setTimeout(listener, delayMs);
+    },
+    (result) => {
+      if (result.status === Office.AsyncResultStatus.Failed) onError(result.error.message);
+    }
+  );
 }

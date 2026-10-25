@@ -59,9 +59,12 @@ describe("Zitate in juristischen Texten", () => {
     ]);
   });
 
-  it("Satz innerhalb einer Nummer", () => {
+  it("Satz innerhalb einer Nummer und Nummer innerhalb eines Satzes", () => {
     expect(cite("§ 569 Abs. 3 Nr. 2 S. 1 BGB")[0].pinpoints).toEqual([
-      { absatz: "3", nr: "2", satz: "1" },
+      { absatz: "3", nr: "2", satz: "1", withinNr: true },
+    ]);
+    expect(cite("§ 434 Abs. 1 S. 2 Nr. 1 BGB")[0].pinpoints).toEqual([
+      { absatz: "1", satz: "2", nr: "1" },
     ]);
   });
 
