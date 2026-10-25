@@ -46,6 +46,18 @@ describe("CitationPanel", () => {
     expect(root.querySelector(".absatz.cited")?.getAttribute("data-absatz")).toBe("2");
   });
 
+  it("macht Verweise im Normtext hoverbar und schließt Tooltips beim Wechsel", async () => {
+    await at("§ 280 BGB", "280");
+    const refs = [...root.querySelectorAll(".norm-text .ref")].map((r) =>
+      r.getAttribute("aria-label")
+    );
+    expect(refs).toEqual(["§ 286 BGB", "§ 281 BGB", "§ 282 BGB", "§ 283 BGB"]);
+    root.querySelector<HTMLElement>(".norm-text .ref")!.click();
+    expect(document.querySelectorAll(".tooltip")).toHaveLength(1);
+    await at("§ 433 BGB", "433");
+    expect(document.querySelectorAll(".tooltip")).toHaveLength(0);
+  });
+
   it("aktualisiert die Hervorhebung bei derselben Norm mit anderer Stelle", async () => {
     const text = "§ 433 Abs. 1 BGB und § 433 Abs. 2 BGB";
     await at(text, "433");

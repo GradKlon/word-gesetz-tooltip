@@ -6,9 +6,10 @@
 import { citationAt, findCitations } from "../citationParser";
 import type { Citation } from "../citationParser";
 import { formatCitation } from "../citationFormat";
-import { AVAILABLE_LAWS, LawStore } from "../lawStore";
+import { AVAILABLE_LAWS, externalUrl, LawStore } from "../lawStore";
 import type { Lookup } from "../lawStore";
 import { nonBreaking, renderNorm } from "../renderNorm";
+import { Tooltips } from "../tooltip";
 
 /** Text des Absatzes, in dem der Cursor steht, und die Cursorposition darin. */
 export interface CursorText {
@@ -34,23 +35,9 @@ interface Resolved {
   choiceKey: string;
 }
 
-/** Seiten auf gesetze-im-internet.de, deren Name nicht einfach das kleingeschriebene Kürzel ist. */
-const LAW_SLUGS: Record<string, string> = {
-  EGBGB: "bgbeg",
-  EGHGB: "hgbeg",
-  UWG: "uwg_2004",
-  AO: "ao_1977",
-  StVO: "stvo_2013",
-  BDSG: "bdsg_2018",
-  BauGB: "bbaug",
-  WEG: "woeigg",
-  VVG: "vvg_2008",
-};
-/** EU-Recht steht nicht auf gesetze-im-internet.de. */
-const EU_LAWS = new Set(["DSGVO", "DS-GVO", "AEUV", "EUV", "GRCh", "EMRK", "EG", "EGV"]);
-
 export class CitationPanel {
   private readonly store: LawStore;
+  private readonly tooltips: Tooltips;
   private readonly status: HTMLElement;
   private readonly notes: HTMLElement;
   private readonly content: HTMLElement;
@@ -62,8 +49,9 @@ export class CitationPanel {
   /** Per Knopf gewählte Gesetze für Zitate ohne Gesetzesangabe. */
   private readonly choices = new Map<string, string>();
 
-  constructor(root: HTMLElement, store: LawStore) {
+  constructor(root: HTMLElement, store: LawStore, tooltips = new Tooltips(store)) {
     this.store = store;
+    this.tooltips = tooltips;
     root.replaceChildren();
     this.status = append(root, "div", "panel-status");
     this.status.setAttribute("role", "status");
@@ -98,6 +86,7 @@ export class CitationPanel {
   /** Zeigt ein Problem an, z. B. wenn Word den Text nicht liefert; `status` ersetzt dann auch die Statuszeile. */
   showProblem(text: string, status?: string): void {
     if (status) this.setStatus(status, true);
+    this.tooltips.closeAll();
     this.shown = undefined;
     this.showing = true;
     this.notes.replaceChildren();
@@ -179,6 +168,7 @@ export class CitationPanel {
 
   private render(resolved: Resolved, focusSwitch = false): void {
     const { citation, source, lookup } = resolved;
+    this.tooltips.closeAll();
     this.shown = `${formatCitation(citation)}|${source}`;
     this.showing = true;
     this.notes.replaceChildren();
@@ -201,7 +191,10 @@ export class CitationPanel {
             `Bereich bis ${unit} ${citation.rangeTo}: angezeigt wird der Anfang, ${unit} ${citation.section}.`
           );
         }
-        const article = renderNorm(lookup.law.file, lookup.norm, { citation });
+        const article = renderNorm(lookup.law.file, lookup.norm, {
+          citation,
+          renderText: this.tooltips.linker(lookup.law.file.abbr),
+        });
         this.content.replaceChildren(article);
         this.scrollToCited(article);
         return;
@@ -337,14 +330,6 @@ export class CitationPanel {
     );
     this.content.replaceChildren(intro);
   }
-}
-
-/** Seite einer nicht enthaltenen Norm auf gesetze-im-internet.de, soweit sich die Adresse ableiten lässt. */
-function externalUrl(law: string, citation: Citation): string | undefined {
-  if (EU_LAWS.has(law) || citation.article || !/^[\p{L}-]+$/u.test(law)) return undefined;
-  const slug = LAW_SLUGS[law] ?? law.toLowerCase();
-  const page = citation.unit === "Art" ? `art_${citation.section}` : `__${citation.section}`;
-  return `https://www.gesetze-im-internet.de/${slug}/${page}.html`;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(

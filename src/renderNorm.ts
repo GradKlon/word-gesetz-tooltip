@@ -9,8 +9,10 @@ import type { Inline, LawFile, List, Norm, Paragraph } from "./lawTypes";
 export interface RenderOptions {
   /** Das Zitat, dessen Stellen hervorgehoben werden. */
   citation?: Citation;
-  /** Schreibt Fließtext in ein Element; Standard: Text mit Zeilenumbrüchen. Hier hängen später die Verweis-Tooltips an. */
+  /** Schreibt Fließtext in ein Element; Standard: Text mit Zeilenumbrüchen. Die Tooltips machen hier Verweise hoverbar. */
   renderText?: (text: string, into: HTMLElement) => void;
+  /** Für Tooltips: ohne Gliederung, Fußnoten und Quellenzeile. */
+  compact?: boolean;
 }
 
 /** Geschütztes Leerzeichen zwischen "§", "Abs.", "Buch" usw. und der folgenden Zahl, damit dort nicht umbrochen wird. */
@@ -36,7 +38,7 @@ export function renderNorm(law: LawFile, norm: Norm, options: RenderOptions = {}
   const pinpoints = options.citation?.pinpoints ?? [];
   const article = el("article", "norm");
 
-  const path = sectionPath(law, norm);
+  const path = options.compact ? [] : sectionPath(law, norm);
   if (path.length > 0) {
     const nav = el("nav", "norm-path");
     nav.setAttribute("aria-label", "Gliederung");
@@ -76,6 +78,8 @@ export function renderNorm(law: LawFile, norm: Norm, options: RenderOptions = {}
     markInnermost(body);
     article.append(body);
   }
+
+  if (options.compact) return article;
 
   if (norm.footnotes?.length) {
     const notes = el("aside", "norm-footnotes");

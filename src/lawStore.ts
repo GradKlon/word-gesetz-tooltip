@@ -92,3 +92,26 @@ export function normUrl(law: LawFile, norm: Norm): string {
     return `${law.source}___${norm.range.replace(/^§§\s*/, "").replace(/[ .]/g, "_")}.html`;
   return `${law.source}__${norm.id}.html`;
 }
+
+/** Seiten auf gesetze-im-internet.de, deren Name nicht einfach das kleingeschriebene Kürzel ist. */
+const LAW_SLUGS: Record<string, string> = {
+  EGBGB: "bgbeg",
+  EGHGB: "hgbeg",
+  UWG: "uwg_2004",
+  AO: "ao_1977",
+  StVO: "stvo_2013",
+  BDSG: "bdsg_2018",
+  BauGB: "bbaug",
+  WEG: "woeigg",
+  VVG: "vvg_2008",
+};
+/** EU-Recht steht nicht auf gesetze-im-internet.de. */
+const EU_LAWS = new Set(["DSGVO", "DS-GVO", "AEUV", "EUV", "GRCh", "EMRK", "EG", "EGV"]);
+
+/** Seite einer nicht enthaltenen Norm auf gesetze-im-internet.de, soweit sich die Adresse ableiten lässt. */
+export function externalUrl(law: string, citation: Citation): string | undefined {
+  if (EU_LAWS.has(law) || citation.article || !/^[\p{L}-]+$/u.test(law)) return undefined;
+  const slug = LAW_SLUGS[law] ?? law.toLowerCase();
+  const page = citation.unit === "Art" ? `art_${citation.section}` : `__${citation.section}`;
+  return `https://www.gesetze-im-internet.de/${slug}/${page}.html`;
+}

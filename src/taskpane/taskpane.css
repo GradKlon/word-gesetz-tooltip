@@ -10,6 +10,8 @@
   --cited-bg: #fff3c4;
   --cited-line: #9a7000;
   --note-bg: #f2efe8;
+  --ref: #8a4b12;
+  --ref-bg: rgb(138 75 18 / 10%);
   --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --text-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   color-scheme: light dark;
@@ -26,6 +28,8 @@
     --cited-bg: #4a3d14;
     --cited-line: #d9a400;
     --note-bg: #2e2b27;
+    --ref: #e8b86a;
+    --ref-bg: rgb(232 184 106 / 14%);
   }
 }
 
@@ -238,6 +242,177 @@ body {
 
 .norm-source a {
   color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ Verweise und Tooltips */
+
+/* Verweise wie die hoverbaren Begriffe in Paradox-Spielen: farbig, gepunktet unterstrichen. */
+.ref {
+  color: var(--ref);
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.ref:hover,
+.ref.ref-open {
+  background: var(--ref-bg);
+}
+
+.ref:focus-visible {
+  outline: 2px solid var(--ref);
+  outline-offset: 1px;
+}
+
+/* Nicht enthaltene Gesetze: zurückhaltend, der Tooltip ist nur ein Hinweis. */
+.ref-external {
+  color: inherit;
+  text-decoration-color: var(--muted);
+}
+
+/*
+ * Der Tooltip ist in hellem und dunklem Modus dunkel, mit goldenem Doppelrahmen wie in CK3.
+ * Er setzt die Farbvariablen neu, damit die Normdarstellung darin ohne eigene Regeln passt.
+ */
+.tooltip {
+  --text: #ece2cc;
+  --muted: #a99b80;
+  --line: #4d4130;
+  --accent: #e7bd6e;
+  --cited-bg: rgb(231 189 110 / 17%);
+  --cited-line: #e7bd6e;
+  --ref: #f2c879;
+  --ref-bg: rgb(242 200 121 / 16%);
+  --frame: #8c6d3c;
+  --frame-locked: #d9ac5c;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(340px, calc(100vw - 16px));
+  max-height: min(28em, var(--room, 100vh));
+  color: var(--text);
+  background: linear-gradient(#2b251d, #1c1813);
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px #120f0b,
+    inset 0 0 0 2px #3e3324,
+    0 0 0 1px #0b0907,
+    0 8px 22px rgb(0 0 0 / 45%);
+  font-size: 13px;
+  line-height: 1.45;
+  /* Bis zum Festsetzen ist der Tooltip für die Maus durchlässig, wie in CK3. */
+  pointer-events: none;
+  animation: tooltip-in 120ms ease-out;
+}
+
+.tooltip.locked {
+  pointer-events: auto;
+  border-color: var(--frame-locked);
+}
+
+.tooltip:focus {
+  outline: none;
+}
+
+.tooltip:focus-visible {
+  outline: 2px solid var(--frame-locked);
+}
+
+/* Fortschrittsbalken bis zum Festsetzen. */
+.tooltip-lock {
+  flex: none;
+  height: 3px;
+  margin: 2px 2px 0;
+  background: #3e3324;
+}
+
+.tooltip-lock > span {
+  display: block;
+  height: 100%;
+  background: var(--frame);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: tooltip-lock var(--lock-ms, 1s) linear forwards;
+}
+
+.tooltip.locked .tooltip-lock > span {
+  animation: none;
+  transform: none;
+  background: var(--frame-locked);
+}
+
+@keyframes tooltip-lock {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.tooltip-body {
+  min-height: 0;
+  overflow-y: auto;
+  /* Bezugspunkt für .visually-hidden, wie bei .panel-content. */
+  position: relative;
+  padding: 8px 12px 10px;
+}
+
+.tooltip .norm-heading {
+  font-size: 16px;
+}
+
+.tooltip .norm-title {
+  margin: 0 0 6px;
+  font-size: 13.5px;
+}
+
+.tooltip .norm-text {
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.tooltip .absatz {
+  margin: 0 0 6px;
+  padding: 1px 6px;
+}
+
+.tooltip-message,
+.tooltip-note {
+  margin: 4px 0;
+  color: var(--muted);
+}
+
+.tooltip-note {
+  font-size: 12px;
+}
+
+.tooltip-message a {
+  color: var(--accent);
+}
+
+.tooltip-more {
+  font: inherit;
+  font-size: 12px;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--frame);
+  border-radius: 3px;
+  padding: 1px 8px;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.tooltip-more:hover {
+  border-color: var(--frame-locked);
 }
 
 /* ------------------------------------------------------------------ Browser-Demo */
