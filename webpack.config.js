@@ -5,7 +5,8 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+// GitHub Pages; der Workflow .github/workflows/pages.yml veröffentlicht dort den Produktions-Build.
+const urlProd = "https://gradklon.github.io/word-gesetz-tooltip/";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -79,6 +80,12 @@ module.exports = async (env, options) => {
             },
           },
         ],
+      }),
+      // Startseite für GitHub Pages: derselbe Seitenbereich, außerhalb von Word als Browser-Demo.
+      new HtmlWebpackPlugin({
+        filename: "index.html",
+        template: "./src/taskpane/taskpane.html",
+        chunks: ["polyfill", "taskpane"],
       }),
       new HtmlWebpackPlugin({
         filename: "commands.html",
