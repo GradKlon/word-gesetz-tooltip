@@ -12,7 +12,7 @@ Enthalten sind **BGB und HGB** im aktuellen Stand von gesetze-im-internet.de. Da
 
 - **Zitate erkennen:** Paragrafen und Artikel mit Absatz, Unterabsatz, Satz, Halbsatz, Nummer, Buchstabe und Alternative, auch in römischer Kurzform (`§ 433 I 1`), Ketten (`§§ 437 Nr. 3, 280 I, III, 281 BGB`), Bereiche (`§§ 3 bis 6`), `f.`/`ff.`, `a.F.`, `i.V.m.` und ausgeschriebene Gesetzesnamen.
 - **Gesetz ohne Angabe:** Fehlt das Gesetz, nimmt das Add-in das zuletzt im Absatz genannte oder das, in dem es die Norm gibt; ein Knopf schaltet um.
-- **Paradox-Tooltips:** 400 ms Verzögerung, dann füllt sich ein Balken; nach 1 s ist der Tooltip festgesetzt und lässt sich betreten. Tooltips stapeln sich beliebig tief. Verlässt die Maus einen Tooltip, schließen er und alle darüber. Klick oder Enter öffnet sofort, Escape schließt.
+- **Tooltips:** 400 ms Verzögerung, dann füllt sich ein Balken; nach 1 s ist der Tooltip festgesetzt und lässt sich betreten. Tooltips stapeln sich beliebig tief. Verlässt die Maus einen Tooltip, schließen er und alle darüber. Klick oder Enter öffnet sofort, Escape schließt.
 - **Kompakt:** Bei „§ 280 Abs. 1“ zeigt der Tooltip nur Abs. 1, der Rest lässt sich aufklappen.
 - **Andere Gesetze:** Verweise auf StGB, ZPO, GG usw. werden erkannt; der Tooltip verlinkt auf gesetze-im-internet.de.
 - **Offline:** Die Gesetzestexte liegen als JSON bei, es gibt keinen Server und kein Backend.
