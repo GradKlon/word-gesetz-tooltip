@@ -1,6 +1,6 @@
 # Gesetz-Tooltip
 
-Ein Word-Add-in für das deutsche Recht: Steht der Cursor in einem Normzitat wie „§ 433 Abs. 1 BGB“ oder „§§ 280 I, III, 281 I 1 BGB“, zeigt ein Seitenbereich den Normtext, die zitierten Absätze, Sätze und Nummern sind hervorgehoben. Verweise im Normtext funktionieren wie die Tooltips in Paradox-Spielen (Crusader Kings 3, Victoria 3): kurz darauf zeigen, der Tooltip erscheint, setzt sich fest, und Verweise darin öffnen den nächsten.
+Ein Word-Add-in für das deutsche Recht: Steht der Cursor in einem Normzitat wie „§ 433 Abs. 1 BGB“ oder „§§ 280 I, III, 281 I 1 BGB“, zeigt ein Seitenbereich den Normtext, die zitierten Absätze, Sätze und Nummern sind hervorgehoben. Im Normtext gibt es Verweise die so funktionieren, dass man kurz darauf zeigt, der Tooltip erscheint, setzt sich fest, und Verweise darin öffnen den nächsten.
 
 **[Live-Demo im Browser](https://gradklon.github.io/word-gesetz-tooltip/)** (ohne Word; ein Textfeld spielt das Dokument)
 
@@ -46,7 +46,7 @@ flowchart LR
         C[citationParser.ts<br/>Zitate finden]
         S[lawStore.ts<br/>Gesetze laden]
         R[renderNorm.ts<br/>Normtext darstellen]
-        T[tooltip.ts<br/>Paradox-Tooltips]
+        T[tooltip.ts<br/>Tooltips]
     end
     G[(src/data/bgb.json<br/>src/data/hgb.json)]
     X[gesetze-im-internet.de<br/>XML]
